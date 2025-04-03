@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Detection</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: #333 ;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            background: black;
+            border-radius: 90%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .about-btn {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-right: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .about-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        main {
+            margin-top: 80px;
+            
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .detection-section {
+            width: 100%;
+            max-width: 1250px;
+            text-align: left;
+            padding: 2rem;
+            background: #f5f5f5;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .verify-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .verify-btn:hover {
+            background: #45a049;
+        }
+
+        .result-section {
+            border: 2px solid #ddd;
+            padding: 1.5rem;
+            border-radius: 5px;
+            margin-top: 2rem;
+        }
+
+        .result-section h3 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .news-section {
+            width: 100%;
+            max-width: 1250px;
+            margin-top: 3rem;
+            background: #f5f5f5;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .news-section h3 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+        }
+
+        .slider-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            height: 400px;
+        }
+
+        .slider {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .slide {
+            min-width: 100%;
+            position: relative;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .slide-description {
+            padding: 1rem;
+            background: white;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .slide-description h4 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .slide-description p {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .slider-buttons {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 1rem;
+            z-index: 1;
+        }
+
+        .slider-btn {
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: background 0.3s ease;
+        }
+
+        .slider-btn:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        footer {
+            width: 100%;
+            background: #333;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+        }
+
+        .news-grid {
+            margin: 3rem auto;
+            max-width: 1250px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .news-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .news-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .news-card-content {
+            padding: 1.5rem;
+        }
+
+        .news-card h4 {
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .news-card p {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .footer-right a {
+            color: white;
+            text-decoration: none;
+            margin-left: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-right a:hover {
+            color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <div class="logo"> 
+                <img src="logo.png" alt="Parmanu Sakti Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+            </div>
+            <div class="title">PARMANU SAKTI</div>
+        </div>
+        <a href="about.html" class="about-btn">About Us</a>
+    </header>
+
+    <main>
+        <div class="detection-section">
+            <h1>Fake News Detection</h1>
+            <h2>Write the news title to check the news is real or fake</h2>
+            <div class="input-group">
+                <input type="text" placeholder="Enter news title" id="news-title" required>
+                <button class="verify-btn">Verify</button>
+            </div>
+            <div class="result-section">
+                <h3>Result</h3>
+                <div id="result"></div>
+            </div>
+        </div>
+
+        <div class="news-section">
+            <h3>Latest News</h3>
+            <div class="slider-container">
+                <div class="slider-buttons">
+                    <button class="slider-btn" onclick="prevSlide()">←</button>
+                    <button class="slider-btn" onclick="nextSlide()">→</button>
+                </div>
+                <div class="slider">
+                    <div class="slide">
+                        <img src="https://picsum.photos/800/300?random=1" alt="News 1">
+                        <div class="slide-description">
+                            <h4>Breaking News 1</h4>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                        </div>
+                    </div>
+                    <div class="slide">
+                        <img src="https://picsum.photos/800/300?random=2" alt="News 2">
+                        <div class="slide-description">
+                            <h4>Breaking News 2</h4>
+                            <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                        </div>
+                    </div>
+                    <div class="slide">
+                        <img src="https://picsum.photos/800/300?random=3" alt="News 3">
+                        <div class="slide-description">
+                            <h4>Breaking News 3</h4>
+                            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="news-grid">
+            <a href="#" class="news-card">
+                <img src="https://picsum.photos/400/300?random=4" alt="News 4">
+                <div class="news-card-content">
+                    <h4>Featured News 1</h4>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor.</p>
+                </div>
+            </a>
+            <a href="#" class="news-card">
+                <img src="https://picsum.photos/400/300?random=5" alt="News 5">
+                <div class="news-card-content">
+                    <h4>Featured News 2</h4>
+                    <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
+                </div>
+            </a>
+            <a href="#" class="news-card">
+                <img src="https://picsum.photos/400/300?random=6" alt="News 6">
+                <div class="news-card-content">
+                    <h4>Featured News 3</h4>
+                    <p>Duis aute irure dolor in reprehenderit in voluptate velit esse.</p>
+                </div>
+            </a>
+            <a href="#" class="news-card">
+                <img src="https://picsum.photos/400/300?random=7" alt="News 7">
+                <div class="news-card-content">
+                    <h4>Featured News 4</h4>
+                    <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui.</p>
+                </div>
+            </a>
+            <a href="#" class="news-card">
+                <img src="https://picsum.photos/400/300?random=8" alt="News 8">
+                <div class="news-card-content">
+                    <h4>Featured News 5</h4>
+                    <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit.</p>
+                </div>
+            </a>
+            <a href="#" class="news-card">
+                <img src="https://picsum.photos/400/300?random=9" alt="News 9">
+                <div class="news-card-content">
+                    <h4>Featured News 6</h4>
+                    <p>Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.</p>
+                </div>
+            </a>
+            <a href="#" class="news-card">
+                <img src="https://picsum.photos/400/300?random=10" alt="News 10">
+                <div class="news-card-content">
+                    <h4>Featured News 7</h4>
+                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem.</p>
+                </div>
+            </a>
+            <a href="#" class="news-card">
+                <img src="https://picsum.photos/400/300?random=11" alt="News 11">
+                <div class="news-card-content">
+                    <h4>Featured News 8</h4>
+                    <p>Quis autem vel eum iure reprehenderit qui in ea voluptate velit.</p>
+                </div>
+            </a>
+            <a href="#" class="news-card">
+                <img src="https://picsum.photos/400/300?random=12" alt="News 12">
+                <div class="news-card-content">
+                    <h4>Featured News 9</h4>
+                    <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui.</p>
+                </div>
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-left">
+            <div class="logo">
+                <img src="logo.png" alt="Parmanu Sakti Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+            </div>
+            <div class="title">PARMANU SAKTI</div>
+        </div>
+        <div class="footer-right">
+            <a href="mailto:contact@paramanusakti.com"> <i class="fa-solid fa-square-envelope"></i> Gmail</a>
+            <a href="https://github.com/paramanusakti" target="_blank"><i class="fa-brands fa-github"></i> GitHub</a>
+        </div>
+    </footer>
+
+    <script>
+        let currentSlide = 0;
+        const slider = document.querySelector('.slider');
+        const slides = document.querySelectorAll('.slide');
+
+        function updateSlider() {
+            slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            updateSlider();
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            updateSlider();
+        }
+
+        // Auto slide every 5 seconds
+        setInterval(nextSlide, 5000);
+    </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const headerLink = document.querySelector('.header-left a');
+        const footerLink = document.querySelector('.footer-left a');
+        
+        [headerLink, footerLink].forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+            });
+        });
+    });
+</script>
+</body>
+</html>
