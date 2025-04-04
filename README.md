@@ -9,3 +9,6 @@ Tech stack includes:
 - Python
 - Tailwind
 - Alpine JS
+
+
+Needs to do Deep Research
