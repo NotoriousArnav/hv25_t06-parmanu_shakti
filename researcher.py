@@ -1,10 +1,9 @@
-os.environ['GROQ_API_KEY'] = "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"
-os.environ['TAVILY_API_KEY'] = "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"
-
-#!pip install open-deep-research
-
 from langgraph.checkpoint.memory import MemorySaver
 from open_deep_research.graph import builder
+from dotenv import load_dotenv
+
+load_dotenv()
+
 memory = MemorySaver()
 graph = builder.compile(checkpointer=memory)
 
