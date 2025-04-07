@@ -9,12 +9,16 @@ from dotenv import load_dotenv
 # Set environment variables
 load_dotenv()
 
-# Initialize memory and graph
 
 # Initialize thread configuration
 with st.sidebar:
+    # Initialize memory and graph
     memory = MemorySaver()
     graph = builder.compile(checkpointer=memory)
+    
+    # Add Github button to as User for Stars and Contribution
+    st.write("This is an Open Source Project. You can contribute to it on [Github](https://github.com/NotoriousArnav/hv25_t06-parmanu_shakti.git)")
+
     st.title('Thread Configuration')
     thread_id = str(uuid.uuid4())
     st.write(f"Thread ID: {thread_id}")
