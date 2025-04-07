@@ -51,28 +51,31 @@ if st.button('Start Research'):
         async for event in graph.astream({"topic": topic}, thread, stream_mode="updates"):
             pass
         #st.write(event['__interrupt__'][0].value)
-
-        st.markdown("## Research Steps")
-        async for event in graph.astream(Command(resume=True), thread, stream_mode="updates"):
-            step = event.get('build_section_with_web_research', None)
-            if step:
-                completed_section = step['completed_sections']
-                for x in completed_section:
-                    with st.spinner(x.name, show_time=True):
-                        st.write(x.description)
-                        st.write(f"Search Used: {x.research}")
-                    await asyncio.sleep(1)
+        
+        with st.spinner("Generating Research Plan"):
+            st.markdown("## Research Plan")
+            async for event in graph.astream(Command(resume=True), thread, stream_mode="updates"):
+                step = event.get('build_section_with_web_research', None)
+                if step:
+                    completed_section = step['completed_sections']
+                    for x in completed_section:
+                        st.markdown(f"""
+- {x.name} - (Research: {x.research})
+{x.description}
+                                    """)
+                        await asyncio.sleep(1)
 
             #st.write(event)
 
-        st.markdown("## Final Report")
-        st.write(event['compile_final_report']['final_report'])
         st.download_button(
                 "Download Final Report",
                 event['compile_final_report']['final_report'],
                 "final_report.md",
                 "text/plain"
             )
+
+        st.markdown("## Final Report")
+        st.write(event['compile_final_report']['final_report'])
 
     import asyncio
     asyncio.run(run_research())
